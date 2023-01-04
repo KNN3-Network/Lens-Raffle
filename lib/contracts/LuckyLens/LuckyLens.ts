@@ -55,7 +55,7 @@ return final.reverse() // reverse to show newest first
 }
 
 
-export const getQualifiedEntrants = async(raffleId: string, requirements:string):Promise<any[]> => {
+export const getWinner = async(raffleId: string, requirements:string):Promise<string> => {
   // first thing to do is get the raffle data from the contract for the given raffleId
   const totalRaffles = await LuckyLensMumbai.totalRaffles()
   if(parseInt(raffleId) > totalRaffles-1) throw new Error('Raffle does not exist')
@@ -81,5 +81,5 @@ export const getQualifiedEntrants = async(raffleId: string, requirements:string)
   console.log(`winner is profile`,allComments[winnerIndex].profileId)
 
 
-  return []
+  return allComments[winnerIndex].profileId
 }

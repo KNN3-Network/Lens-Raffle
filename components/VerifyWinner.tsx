@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react"
-import { getQualifiedEntrants } from "../lib/contracts/LuckyLens/LuckyLens"
+import { getWinner } from "../lib/contracts/LuckyLens/LuckyLens"
 
 
 const VerifyWinner = () => {
   const [raffleId, setRaffleId] = useState<string>('')
   const [checked, setChecked] = useState<string>('')
+  const [winnerId, setWinnerId] = useState<string>('')
   useEffect(()=>console.log(raffleId),[raffleId])
 
   const handleVerify = async () => { 
     if(!raffleId || !checked) return
     console.log('verifying winner')
-    const qualifiedEntrants = await getQualifiedEntrants(raffleId, checked)
+    const winnerProfileId = await getWinner(raffleId, checked)
+    setWinnerId(winnerProfileId)
   }
 
 
@@ -34,6 +36,10 @@ return (
 
   </div>
   <button className='mt-2 bg-green-700 text-white rounded-xl p-2' onClick={handleVerify}>Verify</button>
+
+  {winnerId ? 
+  <div>the winner profile ID is {winnerId}</div> 
+  : null}
   </div>
 )
 }
