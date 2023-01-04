@@ -13,7 +13,7 @@ export const defaultProvider = new ethers.providers.AlchemyProvider('maticmum', 
 
 // exports ethers contract that can be connected to a signer with contract.connect(Signer)
 // in the future can pre-connect to app's provider in here if read-only calls are prevalent in the app
-export const LuckyLensMumbai:Contract = new ethers.Contract("0xAe2D2f2b48FF525ecB5A130982d13cbc5123E63e",LuckyLensJson.abi, defaultProvider)
+export const LuckyLensMumbai:Contract = new ethers.Contract("0x87CDb608BaA03532D06de72d570e6E40689162Bf",LuckyLensJson.abi, defaultProvider)
 console.dir(LuckyLensMumbai)
 
 
