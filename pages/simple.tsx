@@ -2,7 +2,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { getRaffles } from "../lib/contracts/LuckyLens/LuckyLens";
+import { getRafflesForAddress } from "../lib/contracts/LuckyLens/LuckyLens";
 import { getProfile } from "../lib/lensApi/api";
 import { ProfileFieldsFragment } from "../lib/lensApi/generated";
 import { NewRaffleData, RaffleData } from "../lib/types/types";
@@ -31,16 +31,21 @@ const parseLink = (link: string):number[] => {
 
 export default function Simple() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
-  const [link, setLink] = useState<string>('')
+  const [link, setLink] = useState<string>('https://testnet.lenster.xyz/posts/0x5c9a-0x14')
+  
   const [address, setAddress] = useState<string>("")
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null)
   const [signer, setSigner] = useState<ethers.Signer | null>(null)
   const [profile, setProfile] = useState<ProfileFieldsFragment | null>(null)
-  const [raffles, setRaffles] = useState<RaffleData[] | null>(null)
 
 
   const handleLink = () => {
     const nums:number[] = parseLink(link)
+    // find out if there is a winner, show it if there is
+
+    // find out if the caller is the raffle owner
+    // if there isnt a winner && caller is the raffle owner, prompt them to generate a winner
+    // if there isn't a winner && caller is NOT the raffle owner, just show message explaining
     console.log(nums)
     
   }
@@ -60,16 +65,12 @@ export default function Simple() {
     async function updateProfile(address: string) {
       setProfile(await getProfile(address))
     }
-    // gets raffles from connected address
-    async function updateRaffles(address: string) {
-      setRaffles(await getRaffles(address))
-    }
+
     
     // fetch lens profile and live raffles from current address
     useEffect(() => {
       if(!address) return
       updateProfile(address)
-      updateRaffles(address)
     }, [address])
 
   return (
@@ -95,7 +96,7 @@ export default function Simple() {
 
             <label className='block'>
                 <div className='font-medium'>Link to post</div>
-                <input type="text" onChange={e => setLink(e.target.value)}/> 
+                <input type="text" value={link} onChange={e => setLink(e.target.value)}/> 
             </label>
             <button disabled={!link} className='mt-2 bg-green-700 text-white rounded-xl p-2' onClick={handleLink}>
               Generate or Verify Winner

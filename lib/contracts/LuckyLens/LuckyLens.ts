@@ -13,14 +13,14 @@ export const defaultProvider = new ethers.providers.AlchemyProvider('maticmum', 
 
 // exports ethers contract that can be connected to a signer with contract.connect(Signer)
 // in the future can pre-connect to app's provider in here if read-only calls are prevalent in the app
-export const LuckyLensMumbai:Contract = new ethers.Contract("0x87CDb608BaA03532D06de72d570e6E40689162Bf",LuckyLensJson.abi, defaultProvider)
+export const LuckyLensMumbai:Contract = new ethers.Contract("0xF3ed821e21379f09Dd171986892c82EB186Ac80E",LuckyLensJson.abi, defaultProvider)
 console.dir(LuckyLensMumbai)
 
 
 
 
 // getting all raffles rn. not filtering for live raffles or anything.
-export const getRaffles = async(address: string):Promise<any[]> => {
+export const getRafflesForAddress = async(address: string):Promise<any[]> => {
 
 const postRaffleFilter = LuckyLensMumbai.filters.PostRaffle(address)
 const postRaffleLogs = await LuckyLensMumbai.queryFilter(postRaffleFilter, -200000, 'latest') //hardcoded -200000 blocks ago to now

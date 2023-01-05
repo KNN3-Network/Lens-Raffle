@@ -5,7 +5,7 @@ import { client, getProfile } from '../lib/lensApi/api'
 import { useAppState, useConnectWallet } from '@web3-onboard/react'
 import { ProfileFieldsFragment } from '../lib/lensApi/generated'
 import { BigNumber, ethers } from 'ethers'
-import { getRaffles, LuckyLensMumbai } from '../lib/contracts/LuckyLens/LuckyLens'
+import { getRafflesForAddress, LuckyLensMumbai } from '../lib/contracts/LuckyLens/LuckyLens'
 import RaffleCard from '../components/RaffleCard'
 import VerifyWinner from '../components/VerifyWinner'
 import { NewRaffleData, RaffleData } from '../lib/types/types'
@@ -91,7 +91,7 @@ export default function Home() {
   }
   // gets raffles from connected address
   async function updateRaffles(address: string) {
-    setRaffles(await getRaffles(address))
+    setRaffles(await getRafflesForAddress(address))
   }
   
   // fetch lens profile and live raffles from current address
