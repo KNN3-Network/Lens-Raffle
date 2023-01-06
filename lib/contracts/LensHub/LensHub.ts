@@ -1,9 +1,9 @@
 import { profile } from 'console';
 import { BigNumber } from 'ethers';
 import { createClient, gql } from 'urql'
+import { ProfileFieldsFragment } from '../../lensApi/generated';
 
-
-
+// I created this subgraph for lens! Super useful. Currently just mumbai
 const API_URL = 'https://api.thegraph.com/subgraphs/name/brentably/lens-mumbai'
 
 export const client = createClient({
@@ -37,6 +37,21 @@ export const getComments = async (profileId: string, pubId: string, time:string)
   return result.data.commentCreateds
 }
 
+export const getPoster = async (profileId: number):Promise<ProfileFieldsFragment> => {
+  const posterQuery = `
+  query MyQuery($profileId: BigInt!) {
+    profileCreateds(where: {profileId: $profileId}) {
+      id
+      handle
+      creator
+    }
+  }
+  `
+const result = await client.query(posterQuery, {profileId}).toPromise()
+
+return result.data.profileCreateds[0]
+
+}
 
 
 

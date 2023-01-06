@@ -2,7 +2,7 @@
 
 import { BigNumber } from 'ethers';
 import { createClient } from 'urql'
-import { DefaultProfileRequest, ProfileQueryRequest, ProfilesDocument, DefaultProfileDocument, Profile, ProfileFieldsFragment, PublicationDocument, PublicationQueryRequest } from './generated';
+import { DefaultProfileRequest, ProfileQueryRequest, ProfilesDocument, DefaultProfileDocument, Profile, ProfileFieldsFragment, PublicationDocument, PublicationQueryRequest, SingleProfileQueryRequest, ProfileDocument } from './generated';
 
 
 const API_URL = 'https://api-mumbai.lens.dev'
@@ -13,7 +13,7 @@ export const client = createClient({
 
 // going to try a default profile, and if there isn't one, then just get the first profile from the list.
 // in the future, can add selector if needed
-export const getProfile = async (address: string):Promise<ProfileFieldsFragment>=> {
+export const getProfileFromAddress = async (address: string):Promise<ProfileFieldsFragment>=> {
   // const defaultReq:DefaultProfileRequest = {ethereumAddress: address}
   // const defaultResult = await client.query(DefaultProfileDocument, {request: defaultReq} ).toPromise()
   // console.log(defaultResult.data?.defaultProfile)
@@ -32,4 +32,22 @@ export const getPublication = async (profileId: BigNumber, pubId: BigNumber):Pro
   const result = await client.query(PublicationDocument, {request}).toPromise()
   console.log(result)
   return result
+}
+
+export const getProfileFromHexId = async (profileId: string): Promise<any> => {
+  const ProfileQuery = `
+  query MyQuery(profileId: ProfileId) {
+    profile(request: {profileId: $profileId}) {
+      handle
+      id
+      name
+      ownedBy
+    }
+  }`
+
+  const request:SingleProfileQueryRequest = {profileId}
+  const result = await client.query(ProfileDocument, {request}).toPromise()
+  console.log(result)
+  
+  return result.data!.profile
 }

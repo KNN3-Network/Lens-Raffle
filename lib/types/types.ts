@@ -30,7 +30,13 @@ export interface RaffleStruct {
 export interface RaffleData extends RaffleStruct {
   time: string, //time in seconds
   passed: boolean,
-  date: Date,
+  date: Date | null,
 }
 
+
+export type profile = {
+  creator: string //address
+  handle: string
+  id: string
+}
 

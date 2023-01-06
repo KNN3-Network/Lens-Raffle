@@ -1,9 +1,10 @@
 import { useConnectWallet } from "@web3-onboard/react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { getRafflesForAddress } from "../lib/contracts/LuckyLens/LuckyLens";
-import { getProfile } from "../lib/lensApi/api";
+import { getPoster } from "../lib/contracts/LensHub/LensHub";
+import { getRaffleFromIds, getRafflesForAddress } from "../lib/contracts/LuckyLens/LuckyLens";
+import { getProfileFromAddress, getProfileFromHexId } from "../lib/lensApi/api";
 import { ProfileFieldsFragment } from "../lib/lensApi/generated";
 import { NewRaffleData, RaffleData } from "../lib/types/types";
 
@@ -39,14 +40,24 @@ export default function Simple() {
   const [profile, setProfile] = useState<ProfileFieldsFragment | null>(null)
 
 
-  const handleLink = () => {
-    const nums:number[] = parseLink(link)
+  const handleLink = async () => {
+    const [profileId, pubId] = parseLink(link)
+    console.log(profileId, pubId)
     // find out if there is a winner, show it if there is
-
+    const bigNumProfileId = BigNumber.from(profileId)
+    // find out if a raffle has been posted & who the owner of the post is.
+    const returnVal = await getRaffleFromIds(profileId, pubId)
+    // const poster:ProfileFieldsFragment = await getPoster(profileId)
+    // console.log(`pub id is ${pubId} and toString(16) makes it ${pubId.}`)
+    
+    const profile:ProfileFieldsFragment = await getProfileFromHexId(bigNumProfileId.toHexString())
+    
+    const isOwner = profile.ownedBy.toLowerCase() == address.toLowerCase()
+    
     // find out if the caller is the raffle owner
     // if there isnt a winner && caller is the raffle owner, prompt them to generate a winner
     // if there isn't a winner && caller is NOT the raffle owner, just show message explaining
-    console.log(nums)
+    
     
   }
 
@@ -63,7 +74,7 @@ export default function Simple() {
     
     // gets lens profile from connected address
     async function updateProfile(address: string) {
-      setProfile(await getProfile(address))
+      setProfile(await getProfileFromAddress(address))
     }
 
     

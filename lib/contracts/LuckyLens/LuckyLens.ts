@@ -16,11 +16,8 @@ export const defaultProvider = new ethers.providers.AlchemyProvider('maticmum', 
 export const LuckyLensMumbai:Contract = new ethers.Contract("0xF3ed821e21379f09Dd171986892c82EB186Ac80E",LuckyLensJson.abi, defaultProvider)
 console.dir(LuckyLensMumbai)
 
-
-
-
 // getting all raffles rn. not filtering for live raffles or anything.
-export const getRafflesForAddress = async(address: string):Promise<any[]> => {
+export const getRafflesForAddress = async(address: string):Promise<RaffleData[]> => {
 
 const postRaffleFilter = LuckyLensMumbai.filters.PostRaffle(address)
 const postRaffleLogs = await LuckyLensMumbai.queryFilter(postRaffleFilter, -200000, 'latest') //hardcoded -200000 blocks ago to now
@@ -52,6 +49,14 @@ for(let i = 0; i < cleanItUp.length; i++) {
 }
 
 return final.reverse() // reverse to show newest first
+}
+
+export const getRaffleFromIds = async(profileId: number, pubId: number):Promise<RaffleData | any> => {
+  const postRaffleFilter = LuckyLensMumbai.filters.PostRaffle(null, null, profileId, pubId)
+  const postRaffleLogs = await LuckyLensMumbai.queryFilter(postRaffleFilter, -200000, 'latest') //hardcoded -200000 blocks ago to now
+  console.log(postRaffleLogs)
+
+  return postRaffleLogs
 }
 
 

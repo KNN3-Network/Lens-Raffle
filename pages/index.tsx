@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { client, getProfile } from '../lib/lensApi/api'
+import { client, getProfileFromAddress } from '../lib/lensApi/api'
 import { useAppState, useConnectWallet } from '@web3-onboard/react'
 import { ProfileFieldsFragment } from '../lib/lensApi/generated'
 import { BigNumber, ethers } from 'ethers'
@@ -87,7 +87,7 @@ export default function Home() {
   
   // gets lens profile from connected address
   async function updateProfile(address: string) {
-    setProfile(await getProfile(address))
+    setProfile(await getProfileFromAddress(address))
   }
   // gets raffles from connected address
   async function updateRaffles(address: string) {
