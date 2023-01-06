@@ -38,6 +38,10 @@ export default function Simple() {
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null)
   const [signer, setSigner] = useState<ethers.Signer | null>(null)
   const [profile, setProfile] = useState<ProfileFieldsFragment | null>(null)
+  // const [raffleId, setRaffleId] = useState<string>('')
+  const [winnerId, setWinnerId] = useState<string>('')
+  const [winner, setWinner] = useState<{[key: string]: any} | null>(null)
+  useEffect(() => console.log(winner), [winner])
 
 
   const handleLink = async () => {
@@ -48,8 +52,13 @@ export default function Simple() {
     // find out if a raffle has been posted & who the owner of the post is.
     const raffleId:BigNumber|undefined = await getRaffleFromIds(profileId, pubId)
 
-    const winner = raffleId ? await getWinner(raffleId.toString(), "must comment") : ""
-
+    const winnerId = raffleId ? await getWinner(raffleId.toString(), "must comment") : "none"
+    setWinnerId(winnerId)
+    if(winnerId === "") setWinner(null)
+    if(winnerId) {
+      const winnerHandle = await getPoster(parseInt(winnerId))
+      setWinner(winnerHandle)
+    }
 
     // find out if the caller is the raffle owner
     const profile:ProfileFieldsFragment = await getProfileFromHexId(bigNumProfileId.toHexString())
@@ -58,11 +67,16 @@ export default function Simple() {
     // if there isnt a winner && caller is the raffle owner, prompt them to generate a winner
     // if there isn't a winner && caller is NOT the raffle owner, just show message explaining
 
-    if(!winner && isOwner) {
+    if(!winnerId && isOwner) {
       const LuckyLens = LuckyLensMumbai.connect(signer!)
 
       const postRaffleFilter = LuckyLensMumbai.filters.PostRaffle(null, null, profileId, pubId)
-      LuckyLensMumbai.once(postRaffleFilter, (e) => console.log(e))
+
+      LuckyLensMumbai.once(postRaffleFilter, (owner, raffleId, profileId, pubId, time) => {
+        // setRaffleId(raffleId.toString())
+        const winnerFilter = LuckyLensMumbai.filters.RequestFulfilled(raffleId)
+        LuckyLensMumbai.once(winnerFilter, handleLink) // there's a winner now so recursive
+    })
 
       let tx
       try{
@@ -70,19 +84,13 @@ export default function Simple() {
       } catch(err) {
         console.log(err)
       }
-      console.log(tx)
+    }
 
-      
+    if(!winnerId && !isOwner) {
 
     }
 
-    if(!winner && !isOwner) {
-      console.log('no winner has been chosen')
-    }
-
-    if(winner) {
-      //setWinner, etc etc. 
-    }
+    
     
     
   }
@@ -138,6 +146,14 @@ export default function Simple() {
             <button disabled={!link} className='mt-2 bg-green-700 text-white rounded-xl p-2' onClick={handleLink}>
               Generate or Verify Winner
             </button>
+              {winner ? 
+                <div className='mt-2'>The winner is @{winner.handle}</div> 
+              : null }
+              
+              {winnerId === "none" ? 
+                <div className='mt-2'>There is no winner yet</div> 
+              : null }
+
           </div>
     </div>
   )

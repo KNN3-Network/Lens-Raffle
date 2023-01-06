@@ -50,7 +50,6 @@ export const getPoster = async (profileId: number):Promise<ProfileFieldsFragment
 const result = await client.query(posterQuery, {profileId}).toPromise()
 
 return result.data.profileCreateds[0]
-
 }
 
 
