@@ -54,9 +54,9 @@ return final.reverse() // reverse to show newest first
 export const getRaffleFromIds = async(profileId: number, pubId: number):Promise<RaffleData | any> => {
   const postRaffleFilter = LuckyLensMumbai.filters.PostRaffle(null, null, profileId, pubId)
   const postRaffleLogs = await LuckyLensMumbai.queryFilter(postRaffleFilter, -200000, 'latest') //hardcoded -200000 blocks ago to now
-  console.log(postRaffleLogs)
 
-  return postRaffleLogs
+
+  return postRaffleLogs[0]?.args?.raffleId
 }
 
 

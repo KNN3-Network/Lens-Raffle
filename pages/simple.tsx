@@ -3,7 +3,7 @@ import { BigNumber, ethers } from "ethers";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { getPoster } from "../lib/contracts/LensHub/LensHub";
-import { getRaffleFromIds, getRafflesForAddress } from "../lib/contracts/LuckyLens/LuckyLens";
+import { getRaffleFromIds, getRafflesForAddress, getWinner, LuckyLensMumbai } from "../lib/contracts/LuckyLens/LuckyLens";
 import { getProfileFromAddress, getProfileFromHexId } from "../lib/lensApi/api";
 import { ProfileFieldsFragment } from "../lib/lensApi/generated";
 import { NewRaffleData, RaffleData } from "../lib/types/types";
@@ -32,7 +32,7 @@ const parseLink = (link: string):number[] => {
 
 export default function Simple() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
-  const [link, setLink] = useState<string>('https://testnet.lenster.xyz/posts/0x5c9a-0x14')
+  const [link, setLink] = useState<string>('https://testnet.lenster.xyz/posts/0x5c9a-0x15')
   
   const [address, setAddress] = useState<string>("")
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null)
@@ -46,17 +46,40 @@ export default function Simple() {
     // find out if there is a winner, show it if there is
     const bigNumProfileId = BigNumber.from(profileId)
     // find out if a raffle has been posted & who the owner of the post is.
-    const returnVal = await getRaffleFromIds(profileId, pubId)
-    // const poster:ProfileFieldsFragment = await getPoster(profileId)
-    // console.log(`pub id is ${pubId} and toString(16) makes it ${pubId.}`)
-    
+    const raffleId:BigNumber|undefined = await getRaffleFromIds(profileId, pubId)
+
+    const winner = raffleId ? getWinner(raffleId.toString(), "must comment") : "none"
+    console.log(winner)
+
+    // find out if the caller is the raffle owner
     const profile:ProfileFieldsFragment = await getProfileFromHexId(bigNumProfileId.toHexString())
-    
     const isOwner = profile.ownedBy.toLowerCase() == address.toLowerCase()
     
-    // find out if the caller is the raffle owner
     // if there isnt a winner && caller is the raffle owner, prompt them to generate a winner
     // if there isn't a winner && caller is NOT the raffle owner, just show message explaining
+/*
+    if(!raffleId && isOwner) {
+      const LuckyLens = LuckyLensMumbai.connect(signer!)
+
+      let tx
+      try{
+      tx = await LuckyLens.newRaffleDrawNow(profileId, pubId)
+      } catch(err) {
+        console.log(err)
+      }
+      console.log(tx)
+
+
+    }
+
+    if(!raffleId && !isOwner) {
+      console.log('no winner has been chosen')
+    }
+
+    if(returnVal.length) {
+      //setWinner, etc etc. 
+    }
+*/
     
     
   }
