@@ -137,14 +137,14 @@ export default function Simple() {
         : null}
       </div>
       <div id="form" className='mt-4'>
-            <div className='font-semibold text-lg my-2'>Verify or generate a winner:</div>
+            <div className='font-semibold text-lg my-2'>Verify or generate a raffle winner</div>
 
             <label className='block'>
                 <div className='font-medium'>Link to Lenster post</div>
                 <input type="text" value={link} onChange={e => setLink(e.target.value)}/> 
             </label>
-            <button disabled={!link} className='mt-2 bg-green-700 text-white rounded-xl p-2' onClick={handleLink}>
-              Generate or Verify Winner
+            <button disabled={!link} className='mt-2 bg-green-700 text-white rounded-xl p-2 px-5' onClick={handleLink}>
+              Submit
             </button>
               {winner ? 
                 <div className='mt-2'>The winner is @{winner.handle}</div> 
