@@ -48,8 +48,8 @@ export default function Simple() {
     // find out if a raffle has been posted & who the owner of the post is.
     const raffleId:BigNumber|undefined = await getRaffleFromIds(profileId, pubId)
 
-    const winner = raffleId ? getWinner(raffleId.toString(), "must comment") : "none"
-    console.log(winner)
+    const winner = raffleId ? await getWinner(raffleId.toString(), "must comment") : ""
+
 
     // find out if the caller is the raffle owner
     const profile:ProfileFieldsFragment = await getProfileFromHexId(bigNumProfileId.toHexString())
@@ -57,9 +57,12 @@ export default function Simple() {
     
     // if there isnt a winner && caller is the raffle owner, prompt them to generate a winner
     // if there isn't a winner && caller is NOT the raffle owner, just show message explaining
-/*
-    if(!raffleId && isOwner) {
+
+    if(!winner && isOwner) {
       const LuckyLens = LuckyLensMumbai.connect(signer!)
+
+      const postRaffleFilter = LuckyLensMumbai.filters.PostRaffle(null, null, profileId, pubId)
+      LuckyLensMumbai.once(postRaffleFilter, (e) => console.log(e))
 
       let tx
       try{
@@ -69,17 +72,17 @@ export default function Simple() {
       }
       console.log(tx)
 
+      
 
     }
 
-    if(!raffleId && !isOwner) {
+    if(!winner && !isOwner) {
       console.log('no winner has been chosen')
     }
 
-    if(returnVal.length) {
+    if(winner) {
       //setWinner, etc etc. 
     }
-*/
     
     
   }
