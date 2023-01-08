@@ -44,6 +44,7 @@ export default function Simple() {
   useEffect(() => console.log(winner), [winner])
 
 
+  
   const handleLink = async () => {
     const [profileId, pubId] = parseLink(link)
     console.log(profileId, pubId)
@@ -54,8 +55,8 @@ export default function Simple() {
 
     const winnerId = raffleId ? await getWinner(raffleId.toString(), "must comment") : "none"
     setWinnerId(winnerId)
-    if(winnerId === "") setWinner(null)
-    if(winnerId) {
+    if(winnerId === "none") setWinner(null)
+    if(winnerId !== "none" && winnerId) {
       const winnerHandle = await getPoster(parseInt(winnerId))
       setWinner(winnerHandle)
     }
@@ -97,7 +98,7 @@ export default function Simple() {
 
     // updates address, provider, signer based on web3Onboard's wallet
     useEffect(() => {
-      setAddress(wallet?.accounts[0].address || "")
+      setAddress(wallet?.accounts[0]?.address || "")
       const provider = wallet ? new ethers.providers.Web3Provider(wallet.provider, 'any') : null
       provider ? setProvider(provider) : console.log('ooops, couldnt get provider. provider is', provider)
       const signer = provider?.getSigner() 
