@@ -41,19 +41,22 @@ export default function Simple() {
   // const [raffleId, setRaffleId] = useState<string>('')
   const [winnerId, setWinnerId] = useState<string>('')
   const [winner, setWinner] = useState<{[key: string]: any} | null>(null)
-  useEffect(() => console.log(winner), [winner])
+  const [checked, setChecked] = useState<string>('1')
 
 
-  
+  // handles the calculation of the winner OR the prompting of the user to sign a transaction & listening for a winner
   const handleLink = async () => {
     const [profileId, pubId] = parseLink(link)
     console.log(profileId, pubId)
     // find out if there is a winner, show it if there is
     const bigNumProfileId = BigNumber.from(profileId)
+
     // find out if a raffle has been posted & who the owner of the post is.
     const raffleId:BigNumber|undefined = await getRaffleFromIds(profileId, pubId)
 
-    const winnerId = raffleId ? await getWinner(raffleId.toString(), "must comment") : "none"
+    // if a raffle has been posted, find out who winner is, otherwise explicitly mark there is no winner
+    const winnerId = raffleId ? await getWinner(raffleId.toString(), checked) : "none"
+
     setWinnerId(winnerId)
     if(winnerId === "none") setWinner(null)
     if(winnerId !== "none" && winnerId) {
@@ -144,6 +147,16 @@ export default function Simple() {
                 <div className='font-medium'>Link to Lenster post</div>
                 <input type="text" value={link} onChange={e => setLink(e.target.value)}/> 
             </label>
+
+            <label className='block'>
+              <input type="radio" checked={checked == '1'} value='1' onChange={(e) => setChecked(e.target.value)}/>must comment
+            </label>
+            <label className='block'>
+              <input type="radio" checked={checked == '2'} value='2' onChange={(e) => setChecked(e.target.value)}/>must follow and comment
+            </label>
+
+
+
             <button disabled={!link} className='mt-2 bg-green-700 text-white rounded-xl p-2 px-5' onClick={handleLink}>
               Submit
             </button>

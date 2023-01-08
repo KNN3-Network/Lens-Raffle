@@ -60,6 +60,8 @@ export const getRaffleFromIds = async(profileId: number, pubId: number):Promise<
 }
 
 
+// requirements: 1. must comment 2. must follow and comment
+
 export const getWinner = async(raffleId: string, requirements:string):Promise<string> => {
   // first thing to do is get the raffle data from the contract for the given raffleId
   const totalRaffles = await LuckyLensMumbai.totalRaffles()
