@@ -52,6 +52,7 @@ return final.reverse() // reverse to show newest first
 }
 
 export const getRaffleFromIds = async(profileId: number, pubId: number):Promise<RaffleData | any> => {
+  console.log("getting raffle from ids. profile: ",profileId,"pub:", pubId)
   const postRaffleFilter = LuckyLensMumbai.filters.PostRaffle(null, null, profileId, pubId)
   const postRaffleLogs = await LuckyLensMumbai.queryFilter(postRaffleFilter, -200000, 'latest') //hardcoded -200000 blocks ago to now
 
@@ -63,6 +64,7 @@ export const getRaffleFromIds = async(profileId: number, pubId: number):Promise<
 // requirements: 1. must comment 2. must follow and comment
 
 export const getWinner = async(raffleId: string, requirements:string):Promise<string> => {
+  console.log("getting winner for raffle", raffleId, "with requirements", requirements)
   // first thing to do is get the raffle data from the contract for the given raffleId
   const totalRaffles = await LuckyLensMumbai.totalRaffles()
   if(parseInt(raffleId) > totalRaffles-1) throw new Error('Raffle does not exist')

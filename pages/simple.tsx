@@ -32,7 +32,7 @@ const parseLink = (link: string):number[] => {
 
 export default function Simple() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
-  const [link, setLink] = useState<string>('https://testnet.lenster.xyz/posts/0x5c9a-0x15')
+  const [link, setLink] = useState<string>('')
   
   const [address, setAddress] = useState<string>("")
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null)
@@ -42,6 +42,7 @@ export default function Simple() {
   const [winnerId, setWinnerId] = useState<string>('')
   const [winner, setWinner] = useState<{[key: string]: any} | null>(null)
   const [checked, setChecked] = useState<string>('1')
+  const [status, setStatus] = useState<string>('There is no winner yet')
 
 
   // handles the calculation of the winner OR the prompting of the user to sign a transaction & listening for a winner
@@ -67,17 +68,19 @@ export default function Simple() {
     // find out if the caller is the raffle owner
     const profile:ProfileFieldsFragment = await getProfileFromHexId(bigNumProfileId.toHexString())
     const isOwner = profile.ownedBy.toLowerCase() == address.toLowerCase()
+
     
     // if there isnt a winner && caller is the raffle owner, prompt them to generate a winner
     // if there isn't a winner && caller is NOT the raffle owner, just show message explaining
 
-    if(!winnerId && isOwner) {
+    if(winnerId === "none" && isOwner) {
       const LuckyLens = LuckyLensMumbai.connect(signer!)
 
       const postRaffleFilter = LuckyLensMumbai.filters.PostRaffle(null, null, profileId, pubId)
 
       LuckyLensMumbai.once(postRaffleFilter, (owner, raffleId, profileId, pubId, time) => {
         // setRaffleId(raffleId.toString())
+        setStatus('Generating winner')
         const winnerFilter = LuckyLensMumbai.filters.RequestFulfilled(raffleId)
         LuckyLensMumbai.once(winnerFilter, handleLink) // there's a winner now so recursive
     })
@@ -151,9 +154,9 @@ export default function Simple() {
             <label className='block'>
               <input type="radio" checked={checked == '1'} value='1' onChange={(e) => setChecked(e.target.value)}/>must comment
             </label>
-            <label className='block'>
+            {/* <label className='block'>
               <input type="radio" checked={checked == '2'} value='2' onChange={(e) => setChecked(e.target.value)}/>must follow and comment
-            </label>
+            </label> */}
 
 
 
@@ -165,7 +168,7 @@ export default function Simple() {
               : null }
               
               {winnerId === "none" ? 
-                <div className='mt-2'>There is no winner yet</div> 
+                <div className='mt-2'>{status}</div> 
               : null }
 
           </div>
